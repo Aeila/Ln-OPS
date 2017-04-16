@@ -16,15 +16,21 @@ public class PoulpousseScript : MonoBehaviour
 
     public bool isFirstMiniJeu, isSecondMiniJeu, isThirdMiniJeu;
     public bool isMiniJeuStarted, isMiniJeuFinished;
+    public bool isPlayingNewMiniJeu;
+
+    //Premier Mini Jeu
     public bool isFirstSelection, isSameSelection;
     GameObject objectSelectionne;
     string previousObject;
+    //Second Mini Jeu
+    bool question1, question2, question3, question4;
+    List<string> GoodReponse = new List<string>();
+
+    GameObject Bebe, Enfant, Adolescent, Adulte, XtraAdulte;
+    Color32 lastColor;
 
     public string newEvolution;
     public string newEmotion;
-    GameObject EmotionAffiche;
-    GameObject EvolutionUtilise;
-    Vector3 LasMousePosition;
 
     enum Emotion
     {
@@ -72,11 +78,37 @@ public class PoulpousseScript : MonoBehaviour
             float randChild = Random.Range(1, 4);
             GameObject.Find("PremierMiniJeu").transform.GetChild(4).transform.GetChild(i).tag = GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild((int)randChild).name;
         }
+
+        for(int i = 0; i< 4; i++)
+        {
+            int randReponse = Random.Range(1, 4);
+            switch(randReponse)
+            {
+                case 1:
+                    GoodReponse.Add("Rosa");
+                    break;
+                case 2:
+                    GoodReponse.Add("Bianca");
+                    break;
+                case 3:
+                    GoodReponse.Add("RosaEtBianca");
+                    break;
+                case 4:
+                    GoodReponse.Add("Aucun");
+                    break;
+            }                    
+        }
     }
 
     // Use this for initialization
     void Start()
     {
+        Bebe = GameObject.Find(MainPerso.Bebe.ToString());
+        Adolescent = GameObject.Find(MainPerso.Adolescent.ToString());
+        Enfant = GameObject.Find(MainPerso.Enfant.ToString());
+        Adulte = GameObject.Find(MainPerso.Adulte.ToString());
+        XtraAdulte = GameObject.Find(MainPerso.XtraAdulte.ToString());
+
         GameObject.Find(MainPerso.Adolescent.ToString()).SetActive(false);
         GameObject.Find(MainPerso.Enfant.ToString()).SetActive(false);
         GameObject.Find(MainPerso.Adulte.ToString()).SetActive(false);
@@ -89,68 +121,237 @@ public class PoulpousseScript : MonoBehaviour
     {
         CurrentPosition = this.transform.position;
 
-        if(!isFirstMiniJeu)
+        if(isPlayingNewMiniJeu)
         {
-            if(isMiniJeuStarted && !isMiniJeuFinished)
+            #region 1er Mini Jeu
+            if(isFirstMiniJeu && !isSecondMiniJeu && !isThirdMiniJeu)
             {
-                if (GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled)
+                if (isMiniJeuStarted && !isMiniJeuFinished)
                 {
-                    for (int i = 0; i < 4; i++)
+                    if (GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled)
                     {
-                        GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>().enabled = false;
-                    }
-
-                    GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = false;
-                    GameObject.Find("CameraPremierMiniJeu").GetComponent<Camera>().enabled = true;
-                }
-                else
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        Ray ray = GameObject.Find("CameraPremierMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-                        Vector3 point = ray.origin + (ray.direction);
-                        Vector2 touchPoint = new Vector2(point.x, point.y);
-                        RaycastHit2D hit = Physics2D.Raycast(touchPoint, ray.direction);
-                        if(hit.collider != null)
+                        for (int i = 0; i < 4; i++)
                         {
-                            if (!isFirstSelection)
-                            {
-                                isFirstSelection = true;
-                                for(int i=0;i<4;i++)
-                                {
-                                    if(GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.name == hit.collider.tag)
-                                    {
-                                        GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>().enabled = true;
-                                        objectSelectionne = GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject;
-                                    }
-                                }
-                                previousObject = objectSelectionne.name;
-                            }
-                            else if (objectSelectionne.name != hit.collider.tag)
-                            {
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    if (GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.name == hit.collider.tag)
-                                    {
-                                        GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>().enabled = true;
-                                        objectSelectionne = GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject;
-                                    }
-                                }
-                                GameObject.Find(previousObject).GetComponent<SpriteRenderer>().enabled = false;
-                                //objectSelectionne.GetComponent<SpriteRenderer>().enabled = true;
-                                previousObject = objectSelectionne.name;
-                            }
-                            else
-                            {
-                                isMiniJeuFinished = true;
+                            GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                        }
 
+                        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = false;
+                        GameObject.Find("CameraPremierMiniJeu").GetComponent<Camera>().enabled = true;
+                    }
+                    else
+                    {
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            Ray ray = GameObject.Find("CameraPremierMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                            Vector3 point = ray.origin + (ray.direction);
+                            Vector2 touchPoint = new Vector2(point.x, point.y);
+                            RaycastHit2D hit = Physics2D.Raycast(touchPoint, ray.direction);
+                            if (hit.collider != null)
+                            {
+                                if (!isFirstSelection)
+                                {
+                                    isFirstSelection = true;
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        if (GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.name == hit.collider.tag)
+                                        {
+                                            GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                            objectSelectionne = GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject;
+                                        }
+                                    }
+                                    previousObject = objectSelectionne.name;
+                                }
+                                else if (objectSelectionne.name != hit.collider.tag)
+                                {
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        if (GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.name == hit.collider.tag)
+                                        {
+                                            GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                            objectSelectionne = GameObject.Find("PremierMiniJeu").transform.GetChild(0).transform.GetChild(i).gameObject;
+                                        }
+                                    }
+                                    GameObject.Find(previousObject).GetComponent<SpriteRenderer>().enabled = false;
+                                    //objectSelectionne.GetComponent<SpriteRenderer>().enabled = true;
+                                    previousObject = objectSelectionne.name;
+
+                                }
+                                else
+                                {
+                                    isMiniJeuFinished = true;
+                                    isFirstMiniJeu = false;
+                                    isPlayingNewMiniJeu = false;
+                                    GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
+                                    GameObject.Find("CameraPremierMiniJeu").GetComponent<Camera>().enabled = false;
+
+
+                                    if (hit.collider.tag == Emotion.Colere.ToString() + "Face")
+                                    {
+                                        lastColor = new Color32(232, 215, 130, 255);
+                                    }
+                                    else if (hit.collider.tag == Emotion.Bof.ToString() + "Face")
+                                    {
+                                        lastColor = new Color32(232, 215, 130, 255);
+                                    }
+                                    else if (hit.collider.tag == Emotion.Content.ToString() + "Face")
+                                    {
+                                        lastColor = new Color32(242, 216, 64, 255);
+                                    }
+                                    else if (hit.collider.tag == Emotion.Joie.ToString() + "Face")
+                                    {
+                                        lastColor = new Color32(255, 224, 3, 255);
+                                    }
+
+                                    newEmotion = hit.collider.tag;
+
+                                    newEvolution = "Enfant";
+                                }
                             }
                         }
                     }
                 }
             }
+            #endregion
+
+            #region 2nd Mini Jeu
+            else if(!isFirstMiniJeu && isSecondMiniJeu && !isThirdMiniJeu)
+            {
+                question1 = true;
+                if (GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled)
+                {
+                    GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = false;
+                    GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().enabled = true;
+                }
+                if (question1)
+                {
+                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "Je développe des jeux";
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                        Vector3 point = ray.origin + (ray.direction);
+                        Vector2 touchPoint = new Vector2(point.x, point.y);
+                        RaycastHit2D hit = Physics2D.Raycast(touchPoint, ray.direction);
+                        if (hit.collider != null)
+                        {
+                            if (hit.collider.name == GoodReponse[1])
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+                            else
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+
+                            question1 = false;
+                            question2 = true;
+                        }
+                    }
+                }
+                else if(question2)
+                {
+                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "Je suis un vrai cordon bleu";
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                        Vector3 point = ray.origin + (ray.direction);
+                        Vector2 touchPoint = new Vector2(point.x, point.y);
+                        RaycastHit2D hit = Physics2D.Raycast(touchPoint, ray.direction);
+                        if (hit.collider != null)
+                        {
+                            if (hit.collider.name == GoodReponse[1])
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+                            else
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+                            question2 = false;
+                            question3 = true;
+                        }
+                    }
+                }
+                else if(question3)
+                {
+                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "J'ai fait le marathon de Little Big Seaty";
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                        Vector3 point = ray.origin + (ray.direction);
+                        Vector2 touchPoint = new Vector2(point.x, point.y);
+                        RaycastHit2D hit = Physics2D.Raycast(touchPoint, ray.direction);
+                        if (hit.collider != null)
+                        {
+                            if (hit.collider.name == GoodReponse[1])
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+                            else
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+                            question3 = false;
+                            question4 = true;
+                        }
+                    }
+                }
+                else if(question4)
+                {
+                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "J'ai monté ma propre entreprise";
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                        Vector3 point = ray.origin + (ray.direction);
+                        Vector2 touchPoint = new Vector2(point.x, point.y);
+                        RaycastHit2D hit = Physics2D.Raycast(touchPoint, ray.direction);
+                        if (hit.collider != null)
+                        {
+                            if (hit.collider.name == GoodReponse[1])
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+                            else
+                            {
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                GameObject.Find("CadreVisageRosa").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                                GameObject.Find("CadreVisageBianca").transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                            }
+                            question4 = false;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            else if(isFirstMiniJeu && isSecondMiniJeu && isThirdMiniJeu)
+            {
+
+            }
         }
-        else if(isFirstMiniJeu)
+
+        else if(!isPlayingNewMiniJeu)
         {
             if (newEvolution != EtapeEvolution)
             {
@@ -158,7 +359,7 @@ public class PoulpousseScript : MonoBehaviour
             }
             if (newEmotion != EmotionActuelle)
             {
-                ChangementEmotion(newEmotion, EmotionActuelle);
+                ChangementEmotion(EmotionActuelle, newEmotion);
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -221,6 +422,7 @@ public class PoulpousseScript : MonoBehaviour
                 #region Verfication Orientation
                 Ray ray = GameObject.Find(Camera.main.name).GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
                 Vector3 point = ray.origin + (ray.direction);
+                point = new Vector3(point.x, point.y, 0);
                 int valueX = 0;
                 int valueY = 0;
                 if (point.x > this.transform.position.x + 2f)
@@ -281,29 +483,96 @@ public class PoulpousseScript : MonoBehaviour
 
     void ChangementEvolution(string nouvelleEvolution, string oldEvolution)
     {
-        GameObject.Find(nouvelleEvolution).SetActive(true);
-        GameObject.Find(oldEvolution).SetActive(false);
+        if (nouvelleEvolution == "Bebe")
+        {
+            Bebe.SetActive(true);
+        }
+        else if (nouvelleEvolution == "Enfant")
+        {
+            Enfant.SetActive(true);
+        }
+        else if (nouvelleEvolution == "Adolescent")
+        {
+            Adolescent.SetActive(true);
+        }
+        else if (nouvelleEvolution == "Adulte")
+        {
+            Adulte.SetActive(true);
+        }
+        else if (nouvelleEvolution == "XtraAdulte")
+        {
+            XtraAdulte.SetActive(true);
+        }
+
+        if (oldEvolution == "Bebe")
+        {
+            Bebe.SetActive(false);
+        }
+        else if (oldEvolution == "Enfant")
+        {
+            Enfant.SetActive(false);
+        }
+        else if (oldEvolution == "Adolescent")
+        {
+            Adolescent.SetActive(false);
+        }
+        else if (oldEvolution == "Adulte")
+        {
+            Adulte.SetActive(false);
+        }
+        else if (oldEvolution == "XtraAdulte")
+        {
+            XtraAdulte.SetActive(false);
+        }
 
         EtapeEvolution = nouvelleEvolution;
+
+        for (int i = 0; i < 7; i++)
+        {
+            string elementToHide = GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.GetChild(i).name;
+            if (elementToHide != (EmotionActuelle + "Face"))
+            {
+                GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.GetChild(i).gameObject.SetActive(false);
+            }
+
+            GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(2).gameObject.SetActive(false);
+        }
     }
 
     void ChangementEmotion(string oldEmotion, string nouvelleEmotion)
     {
-        for(int i = 0; i < GameObject.Find(EtapeEvolution).transform.childCount;i++)
+        for(int i = 0; i < GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.childCount;i++)
         {
-            string elementToHide = GameObject.Find(EtapeEvolution).transform.GetChild(i).name + "Face";
+            string elementToHide = GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.GetChild(i).name ;
 
             if (elementToHide == nouvelleEmotion)
             {
                 GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.GetChild(i).gameObject.SetActive(true);
+                SpriteRenderer rendererToChange = GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).GetComponent<SpriteRenderer>();
+                Debug.Log(rendererToChange.color);
+                rendererToChange.color = new Color32(lastColor.r, lastColor.g, lastColor.b,255);
+                //rendererToChange.color = Color.red;
+                Debug.Log(rendererToChange.color);
             }
+
+            if(!oldEmotion.Contains("Face"))
+            {
+                oldEmotion = oldEmotion + "Face";
+            }
+
             if (elementToHide == oldEmotion)
             {
                 GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.GetChild(i).gameObject.SetActive(false);
             }
         }
-
-        EmotionActuelle = nouvelleEmotion;
+        if(!nouvelleEmotion.Contains("Face"))
+        {
+            EmotionActuelle = nouvelleEmotion + "Face";
+        }
+        else
+        {
+            EmotionActuelle = nouvelleEmotion;
+        }
     }
 
     void ChangementOrientation()

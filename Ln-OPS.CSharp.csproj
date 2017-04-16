@@ -93,6 +93,7 @@
     <Compile Include="Assets\Script\CameraFollow.cs" />
     <Compile Include="Assets\Script\CapsuleWaypoint.cs" />
     <Compile Include="Assets\Script\IAJaune.cs" />
+    <Compile Include="Assets\Script\IARouge.cs" />
     <Compile Include="Assets\Script\PoulpousseScript.cs" />
     <Compile Include="Assets\Script\Profil.cs" />
     <Compile Include="Assets\Script\SecondaryCharacter.cs" />

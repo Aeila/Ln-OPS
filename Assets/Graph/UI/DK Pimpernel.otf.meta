@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: aea9b7b696321344796830fc97f2b651
+timeCreated: 1492321868
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: DK Pimpernel
+  fontNames:
+  - DK Pimpernel
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
