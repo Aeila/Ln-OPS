@@ -1,4 +1,7 @@
 sceneSetups:
+- path: Assets/Scenes/Accueil.unity
+  isLoaded: 0
+  isActive: 0
 - path: Assets/Scenes/WorldMap.unity
   isLoaded: 1
   isActive: 1

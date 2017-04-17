@@ -90,6 +90,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\EcloseScript.cs" />
     <Compile Include="Assets\Script\CameraFollow.cs" />
     <Compile Include="Assets\Script\CapsuleWaypoint.cs" />
     <Compile Include="Assets\Script\IAJaune.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Assets\Script\PoulpousseScript.cs" />
     <Compile Include="Assets\Script\Profil.cs" />
     <Compile Include="Assets\Script\SecondaryCharacter.cs" />
+    <Compile Include="Assets\accueilscript.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

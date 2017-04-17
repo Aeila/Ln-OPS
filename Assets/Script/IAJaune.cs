@@ -6,7 +6,7 @@ public class IAJaune : MonoBehaviour
 {
     public Vector3 CurrentPostion;
     PoulpousseScript joueur;
-    bool isStartGame, startNewMiniJeu;
+    public bool isStartGame, startNewMiniJeu;
     Vector3 positionAtStart;
 
     // Use this for initialization
@@ -21,7 +21,7 @@ public class IAJaune : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        if(!startNewMiniJeu)
+        if(startNewMiniJeu)
         {
             float dist = Vector3.Distance(this.transform.position, joueur.CurrentPosition);
             if (isStartGame && dist >= 2)

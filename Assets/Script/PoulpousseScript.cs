@@ -18,6 +18,8 @@ public class PoulpousseScript : MonoBehaviour
     public bool isMiniJeuStarted, isMiniJeuFinished;
     public bool isPlayingNewMiniJeu;
 
+    public GameObject[] messageSundy;
+
     //Premier Mini Jeu
     public bool isFirstSelection, isSameSelection;
     GameObject objectSelectionne;
@@ -184,22 +186,27 @@ public class PoulpousseScript : MonoBehaviour
                                     GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
                                     GameObject.Find("CameraPremierMiniJeu").GetComponent<Camera>().enabled = false;
 
+                                    messageSundy[0].SetActive(true);
 
                                     if (hit.collider.tag == Emotion.Colere.ToString() + "Face")
                                     {
                                         lastColor = new Color32(232, 215, 130, 255);
+                                        messageSundy[4].SetActive(true);
                                     }
                                     else if (hit.collider.tag == Emotion.Bof.ToString() + "Face")
                                     {
                                         lastColor = new Color32(232, 215, 130, 255);
+                                        messageSundy[3].SetActive(true);
                                     }
                                     else if (hit.collider.tag == Emotion.Content.ToString() + "Face")
                                     {
                                         lastColor = new Color32(242, 216, 64, 255);
+                                        messageSundy[2].SetActive(true);
                                     }
                                     else if (hit.collider.tag == Emotion.Joie.ToString() + "Face")
                                     {
                                         lastColor = new Color32(255, 224, 3, 255);
+                                        messageSundy[1].SetActive(true);
                                     }
 
                                     newEmotion = hit.collider.tag;
@@ -216,15 +223,16 @@ public class PoulpousseScript : MonoBehaviour
             #region 2nd Mini Jeu
             else if(!isFirstMiniJeu && isSecondMiniJeu && !isThirdMiniJeu)
             {
-                question1 = true;
                 if (GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled)
                 {
                     GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = false;
                     GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().enabled = true;
+                    question1 = true;
                 }
                 if (question1)
                 {
-                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "Je développe des jeux";
+                    GameObject.FindGameObjectWithTag("QuestionBoard").GetComponent<TextMesh>().text = "Je développe des jeux";
+
                     if (Input.GetMouseButtonDown(0))
                     {
                         Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -253,9 +261,9 @@ public class PoulpousseScript : MonoBehaviour
                         }
                     }
                 }
-                else if(question2)
+                else if(question2 && !question1)
                 {
-                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "Je suis un vrai cordon bleu";
+                    GameObject.FindGameObjectWithTag("QuestionBoard").GetComponent<TextMesh>().text = "Je suis un vrai cordon bleu";
                     if (Input.GetMouseButtonDown(0))
                     {
                         Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -285,7 +293,7 @@ public class PoulpousseScript : MonoBehaviour
                 }
                 else if(question3)
                 {
-                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "J'ai fait le marathon de Little Big Seaty";
+                    GameObject.FindGameObjectWithTag("QuestionBoard").GetComponent<TextMesh>().text = "J'ai fait le marathon de Little Big Seaty";
                     if (Input.GetMouseButtonDown(0))
                     {
                         Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -315,7 +323,7 @@ public class PoulpousseScript : MonoBehaviour
                 }
                 else if(question4)
                 {
-                    GameObject.Find("Discours").GetComponent<TextMesh>().text = "J'ai monté ma propre entreprise";
+                    GameObject.FindGameObjectWithTag("QuestionBoard").GetComponent<TextMesh>().text = "J'ai monté ma propre entreprise";
                     if (Input.GetMouseButtonDown(0))
                     {
                         Ray ray = GameObject.Find("CameraSecondMiniJeu").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -364,6 +372,14 @@ public class PoulpousseScript : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
+                foreach ( GameObject message in messageSundy)
+                {
+                    if (message.activeSelf)
+                    {
+                        message.SetActive(false);
+                    }
+                }
+
                 Ray ray = GameObject.Find(Camera.main.name).GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
                 Vector3 point = ray.origin + (ray.direction);
 
@@ -582,13 +598,19 @@ public class PoulpousseScript : MonoBehaviour
             #region Affichage
             for (int i = 0; i < 7; i++)
             {
+                if(EmotionActuelle.Contains("Face"))
+                {                    
+                    EmotionActuelle = TableDeComparaison(EmotionActuelle, "Profil");
+                    newEmotion = EmotionActuelle;
+                }
                 string elementToHide = GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(2).transform.GetChild(i).name;
+
                 if (!GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(2).gameObject.activeSelf)
                 {
                     GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(2).gameObject.SetActive(true);
                 }
 
-                if (elementToHide != (EmotionActuelle + "Profil"))
+                if (elementToHide != (EmotionActuelle))
                 {
                     GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(2).transform.GetChild(i).gameObject.SetActive(false);
                 }
@@ -648,13 +670,18 @@ public class PoulpousseScript : MonoBehaviour
         {
             for (int i = 0; i < 7; i++)
             {
+                if (EmotionActuelle.Contains("Profil"))
+                {
+                    EmotionActuelle = TableDeComparaison(EmotionActuelle, "Face");
+                    newEmotion = EmotionActuelle;
+                }
                 if (!GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).gameObject.activeSelf)
                 {
                     GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).gameObject.SetActive(true);
                 }
 
                 string elementToHide = GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.GetChild(i).name;
-                if (elementToHide != (EmotionActuelle + "Face"))
+                if (elementToHide != (EmotionActuelle))
                 {
                     GameObject.Find(EtapeEvolution).transform.GetChild(0).transform.GetChild(1).transform.GetChild(i).gameObject.SetActive(false);
                 }
@@ -675,5 +702,88 @@ public class PoulpousseScript : MonoBehaviour
     {
         Vector3 positionXMoins1 = new Vector3(newPosition.x - valueX, newPosition.y - valueY, newPosition.z);
         this.transform.position = Vector3.Lerp(this.transform.position, positionXMoins1, Time.deltaTime * 2);
+    }
+
+    string TableDeComparaison(string FaceToShow, string FaceToProfile)
+    {
+        if (FaceToShow.Contains("Bof"))
+        {
+            if (FaceToProfile == "Profil")
+            {
+                FaceToShow = "BofProfil";
+            }
+            else
+            {
+                FaceToShow = "BofFace";
+            }
+        }
+        else if (FaceToShow.Contains("Colere"))
+        {
+            if (FaceToProfile == "Profil")
+            {
+                FaceToShow = "ColereProfil";
+            }
+            else
+            {
+                FaceToShow = "ColereFace";
+            }
+        }
+        else if (FaceToShow.Contains("Content"))
+        {
+            if (FaceToProfile == "Profil")
+            {
+                FaceToShow = "ContentProfil";
+            }
+            else
+            {
+                FaceToShow = "ContentFace";
+            }
+        }
+        else if (FaceToShow.Contains("Joie"))
+        {
+            if (FaceToProfile == "Profil")
+            {
+                FaceToShow = "JoieProfil";
+            }
+            else
+            {
+                FaceToShow = "JoieFace";
+            }
+        }
+        else if (FaceToShow.Contains("Love"))
+        {
+            if (FaceToProfile == "Profil")
+            {
+                FaceToShow = "LoveProfil";
+            }
+            else
+            {
+                FaceToShow = "LoveFace";
+            }
+        }
+        else if (FaceToShow.Contains("Surpris"))
+        {
+            if (FaceToProfile == "Profil")
+            {
+                FaceToShow = "SurprisProfil";
+            }
+            else
+            {
+                FaceToShow = "SurprisFace";
+            }
+        }
+        else if (FaceToShow.Contains("Tristesse"))
+        {
+            if (FaceToProfile == "Profil")
+            {
+                FaceToShow = "TristesseProfil";
+            }
+            else
+            {
+                FaceToShow = "TristesseFace";
+            }
+        }
+
+        return FaceToShow;
     }
 }
